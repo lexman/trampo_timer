@@ -4,11 +4,16 @@
     orientation:"vertical"
     rows:2
     spacing: 10
+    padding:10
+    decompte:decompte
     Label:
+        id: decompte
         font_size: 150
         text: "24' 03''"    
         size_hint: 1,.9
     BoxLayout:
+        padding:10
+        spacing:10
         size_hint: 1,.1
         orientation:"horizontal"
         Label:
@@ -17,7 +22,9 @@
         TextInput:
             size_hint: .2,1
             text: "4"
+            multiline:False
             id:nb_passages
+            input_type:"number"
         Label:
             top: root.top - 10
             text: "passages (parmis "
@@ -25,12 +32,19 @@
             size_hint: .2,1
             text: "4"
             id:total_passages
+            multiline:False
+            input_type:"number"
         Label:
             top: root.top - 10
             text: ") sur "
         TextInput:
             size_hint: .2,1
+            multiline:False
             text: "4"
             id:nb_trampolines
+            input_type:"number"
         Label:
             text: "trampolines"
+        Button:
+            text: "Pause"
+            id:play_pause
