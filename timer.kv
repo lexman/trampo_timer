@@ -6,9 +6,10 @@
     spacing: 10
     padding:10
     decompte:decompte
-    nb_passages:nb_passages
-    total_passages:total_passages
-    nb_trampolines:nb_trampolines
+    ti_nb_passages:ti_nb_passages
+    ti_total_passages:ti_total_passages
+    ti_nb_trampolines:ti_nb_trampolines
+    ti_nb_rotations:ti_nb_rotations
     Label:
         id: decompte
         font_size: 150
@@ -24,18 +25,18 @@
             text: "Il reste"
         TextInput:
             size_hint: .2,1
-            text: "4"
+            text: "3"
             multiline:False
-            id:nb_passages
+            id:ti_nb_passages
             input_type:"number"
-            on_text_validate:root.saisie_nb_passages()
+            on_text_validate:root.saisie_nb_passages(self.text)
         Label:
             top: root.top - 10
             text: "passages courts (parmis "
         TextInput:
             size_hint: .2,1
             text: "4"
-            id:total_passages
+            id:ti_total_passages
             multiline:False
             input_type:"number"
         Label:
@@ -44,8 +45,8 @@
         TextInput:
             size_hint: .2,1
             multiline:False
-            text: "4"
-            id:nb_trampolines
+            text: "3"
+            id:ti_nb_trampolines
             input_type:"number"
         Label:
             text: "trampolines puis "
@@ -53,7 +54,7 @@
             size_hint: .2,1
             multiline:False
             text: "4"
-            id:nb_rotations
+            id:ti_nb_rotations
             input_type:"number"
         Label:
             text: "rotations"

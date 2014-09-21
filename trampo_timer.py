@@ -4,19 +4,28 @@ from kivy.clock import Clock
 from kivy.properties import ObjectProperty
 from time import time
 
-DUREE_PASSAGE = 60
+DUREE_PASSAGE = 10
 INTER_PASSAGE = 5
 INTER_TRAMPO = 10
+
+NB_TRAMPOS_DEFAUT = 4
+NB_PERS_PAR_TRAMPO_DEFAUT = 4
 
 class TimerContainer(BoxLayout):
 
 
     def __init__(self):
-        def nope():
-            pass
-        self.timeout(DUREE_PASSAGE, nope)
+        self.nb_passages = NB_PERS_PAR_TRAMPO_DEFAUT
+        self.nb_trampolines = NB_TRAMPOS_DEFAUT
+        self.total_passages = NB_PERS_PAR_TRAMPO_DEFAUT
+        self.saisie_nb_passages(4)
         BoxLayout.__init__(self)
     
+    def update_input_values(self):
+        self.ti_nb_passages.text = str(self.nb_passages)
+        self.ti_total_passages.text = str(self.total_passages)
+        self.ti_nb_trampolines.text = str(self.nb_trampolines)
+
         
     def duree_formatee(self, duree_secondes):
         minutes = int(duree_secondes) / 60
@@ -27,15 +36,28 @@ class TimerContainer(BoxLayout):
         restant = self.objectif-time()
         self.decompte.text = self.duree_formatee(restant)
         if restant <= 0:
-            self.timeout_cb()
+            cb = self.timeout_cb
+            #self.timeout_cb = None
+            cb()
 
     def passage_termine(self):
-        pass
+        print "passage_termine"
+        if self.nb_passages > 0:
+            self.nb_passages = self.nb_passages - 1            
+        else :
+            self.nb_trampolines = self.nb_trampolines - 1
+            if self.nb_trampolines > 0:
+                self.nb_passages = self.total_passages - 1
+                self.timeout(DUREE_PASSAGE, self.passage_termine)
+            else:
+                pass            
+        self.update_input_values()
+            
 
-    def saisie_nb_passages(self):
-        nb_passages = int(self.nb_passages.text)
-        print nb_passages
-        self.timeout(DUREE_PASSAGE, nope)
+    def saisie_nb_passages(self, nb_passages_saisies):
+        self.nb_passages = int(nb_passages_saisies)
+        print self.nb_passages
+        self.timeout(DUREE_PASSAGE, self.passage_termine)
 
     def saisie_total_passages(self):
         total_passages = int(self.total_passages.text)
