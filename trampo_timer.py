@@ -15,11 +15,15 @@ class TimerContainer(BoxLayout):
 
 
     def __init__(self):
-        self.nb_passages = NB_PERS_PAR_TRAMPO_DEFAUT - 1
-        self.nb_trampolines = NB_TRAMPOS_DEFAUT - 1
-        self.total_passages = NB_PERS_PAR_TRAMPO_DEFAUT
-        self.saisie_nb_passages(4)
         BoxLayout.__init__(self)
+        self.pause = True
+        self.clock_event = None
+        self.nb_passages = 0
+        self.nb_trampolines = NB_TRAMPOS_DEFAUT
+        self.total_passages = NB_PERS_PAR_TRAMPO_DEFAUT
+        self.update_input_values()
+
+        #self.saisie_nb_passages(4)
     
     def update_input_values(self):
         self.ti_nb_passages.text = str(self.nb_passages)
@@ -57,7 +61,7 @@ class TimerContainer(BoxLayout):
 
     def saisie_nb_passages(self, nb_passages_saisies):
         self.nb_passages = int(nb_passages_saisies)
-        print self.nb_passages
+        self.passage_termine()
         self.timeout(DUREE_PASSAGE, self.passage_termine)
 
     def saisie_total_passages(self):
@@ -71,11 +75,27 @@ class TimerContainer(BoxLayout):
     def timeout(self, duree, callback):
         self.restant = duree
         self.timeout_cb = callback
+        
+    def play_pause(self):
+        if self.clock_event == None:
+            # Tout premier appui sur le bouton pour lancer le chrono
+            self.passage_termine()
+        if self.pause:
+            self.bt_play_pause.text = "Pause"
+            self.tick(1.0)
+            self.clock_event = Clock.schedule_interval(self.tick, 1.0)
+            self.pause = False
+        else:
+            self.bt_play_pause.text = "Go !"
+            print(self.clock_event)
+            print(dir(self.clock_event))
+            Clock.unschedule(self.tick)
+            self.pause = True
+            
 
 class TimerApp(App):
     def build(self):
         container = TimerContainer()
-        Clock.schedule_interval(container.tick, 1.0)
         return container
 
 

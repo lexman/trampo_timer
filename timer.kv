@@ -10,11 +10,12 @@
     ti_total_passages:ti_total_passages
     ti_nb_trampolines:ti_nb_trampolines
     ti_nb_rotations:ti_nb_rotations
+    bt_play_pause:bt_play_pause
     Label:
         id: decompte
         font_size: 150
         color: [1, 0, 0, 1]
-        text: "24' 03''"    
+        text: "00' 59''"    
         size_hint: 1,.9
     BoxLayout:
         padding:10
@@ -60,5 +61,6 @@
         Label:
             text: "rotations"
         Button:
-            text: "Pause"
-            id:play_pause
+            text: "Go !"
+            id:bt_play_pause
+            on_press:root.play_pause()
