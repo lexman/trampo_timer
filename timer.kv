@@ -6,6 +6,9 @@
     spacing: 10
     padding:10
     decompte:decompte
+    nb_passages:nb_passages
+    total_passages:total_passages
+    nb_trampolines:nb_trampolines
     Label:
         id: decompte
         font_size: 150
@@ -25,9 +28,10 @@
             multiline:False
             id:nb_passages
             input_type:"number"
+            on_text_validate:root.saisie_nb_passages()
         Label:
             top: root.top - 10
-            text: "passages (parmis "
+            text: "passages courts (parmis "
         TextInput:
             size_hint: .2,1
             text: "4"
@@ -44,7 +48,15 @@
             id:nb_trampolines
             input_type:"number"
         Label:
-            text: "trampolines"
+            text: "trampolines puis "
+        TextInput:
+            size_hint: .2,1
+            multiline:False
+            text: "4"
+            id:nb_rotations
+            input_type:"number"
+        Label:
+            text: "rotations"
         Button:
             text: "Pause"
             id:play_pause
