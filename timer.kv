@@ -1,0 +1,36 @@
+#:kivy 1.0.9
+
+<TimerContainer>:   
+    orientation:"vertical"
+    rows:2
+    spacing: 10
+    Label:
+        font_size: 150
+        text: "24' 03''"    
+        size_hint: 1,.9
+    BoxLayout:
+        size_hint: 1,.1
+        orientation:"horizontal"
+        Label:
+            top: root.top - 10
+            text: "Il reste"
+        TextInput:
+            size_hint: .2,1
+            text: "4"
+            id:nb_passages
+        Label:
+            top: root.top - 10
+            text: "passages (parmis "
+        TextInput:
+            size_hint: .2,1
+            text: "4"
+            id:total_passages
+        Label:
+            top: root.top - 10
+            text: ") sur "
+        TextInput:
+            size_hint: .2,1
+            text: "4"
+            id:nb_trampolines
+        Label:
+            text: "trampolines"
