@@ -15,8 +15,8 @@ class TimerContainer(BoxLayout):
 
 
     def __init__(self):
-        self.nb_passages = NB_PERS_PAR_TRAMPO_DEFAUT
-        self.nb_trampolines = NB_TRAMPOS_DEFAUT
+        self.nb_passages = NB_PERS_PAR_TRAMPO_DEFAUT - 1
+        self.nb_trampolines = NB_TRAMPOS_DEFAUT - 1
         self.total_passages = NB_PERS_PAR_TRAMPO_DEFAUT
         self.saisie_nb_passages(4)
         BoxLayout.__init__(self)
@@ -33,11 +33,11 @@ class TimerContainer(BoxLayout):
         return "{}' {}''".format(minutes, secondes)
     
     def tick(self, dt):
-        restant = self.objectif-time()
-        self.decompte.text = self.duree_formatee(restant)
-        if restant <= 0:
+        self.restant = self.restant - 1
+        self.decompte.text = self.duree_formatee(self.restant)
+        if self.restant <= 0:
             cb = self.timeout_cb
-            #self.timeout_cb = None
+            self.timeout_cb = None
             cb()
 
     def passage_termine(self):
@@ -45,13 +45,14 @@ class TimerContainer(BoxLayout):
         if self.nb_passages > 0:
             self.nb_passages = self.nb_passages - 1            
         else :
-            self.nb_trampolines = self.nb_trampolines - 1
             if self.nb_trampolines > 0:
+                self.nb_trampolines = self.nb_trampolines - 1
                 self.nb_passages = self.total_passages - 1
                 self.timeout(DUREE_PASSAGE, self.passage_termine)
             else:
                 pass            
         self.update_input_values()
+        self.timeout(DUREE_PASSAGE, self.passage_termine)
             
 
     def saisie_nb_passages(self, nb_passages_saisies):
@@ -68,7 +69,7 @@ class TimerContainer(BoxLayout):
         print nb_trampolines
         
     def timeout(self, duree, callback):
-        self.objectif = time() + duree
+        self.restant = duree
         self.timeout_cb = callback
 
 class TimerApp(App):
