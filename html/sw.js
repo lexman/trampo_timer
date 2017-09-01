@@ -23,13 +23,11 @@ let version = '0.57';
 self.addEventListener('install', e => {
   let timeStamp = Date.now();
   e.waitUntil(
-    caches.open('airhorner').then(cache => {
+    caches.open('timer12').then(cache => {
       return cache.addAll([
-        `/`,
-        `/index.html?timestamp=${timeStamp}`,
-        `/styles/main.css?timestamp=${timeStamp}`,
-        `/scripts/main.min.js?timestamp=${timeStamp}`,
-        `/sounds/airhorn.mp3?timestamp=${timeStamp}`
+        'index.html',
+        '2047.mp3',
+        '1935.mp3'
       ])
       .then(() => self.skipWaiting());
     })

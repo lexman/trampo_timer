@@ -34,12 +34,14 @@
     font-size: 80%;
 }
 
-
 </style>
   </head>
   <body>
       <div class="timer"> 
           00' 59''
+      </div>
+      <div class="info">
+          <div> <span id="horloge">yyyymmdd HH:MM</span> - <span id="minutes_restantes">minutes_restantes</span> minutes jusqu'à 21h30</div>
       </div>
       <div class="saisie_de_base">
       Pour <input id="nb_trampos" type="text" size="2" maxlength="2" value="4" onchange="maj_champs_mineurs()"/> trampolines et <input id="nb_personnes" type="text" size="2" maxlength="2" value="4" onchange="maj_champs_mineurs()"/> personnes  par trampo, <input type="text" size="2" maxlength="2" value="60" id="duree_passage" onchange="maj_champs_mineurs()"/> secondes par passage
@@ -50,12 +52,11 @@
           <div>
               puis  <input id="rotations_restantes" type="text" size="2" maxlength="2"/>  rotations de <input id="duree_rotation" type="text" size="3" maxlength="3"/> minutes
           </div>
-          <div > <span id="horloge">yyyymmdd HH:MM</span> -  <span id="minutes_restantes">minutes_restantes</span> minutes jusqu'à 21h30</div>
       </div>
-      <audio src="1935.mp3" id="bip_suivant">
+      <audio src="bip_suivant.mp3" id="bip_suivant">
         <p>Pas de chance, il faut pouvoir lire les mp3</p>
       </audio>
-      <audio src="2047.mp3" id="bip_ontourne">
+      <audio src="bip_ontourne.mp3" id="bip_ontourne">
         <p>Pas de chance, il faut pouvoir lire les mp3</p>
       </audio>
       <div>
@@ -67,7 +68,7 @@
       
       <script>
         if('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('sw.js', { scope: 'timer.html' })
+          navigator.serviceWorker.register('sw.js', { scope: '/' })
              .then(function(registration) {
                   console.log('Service Worker Registered');
             });
