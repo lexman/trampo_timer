@@ -26,8 +26,8 @@ self.addEventListener('install', e => {
     caches.open('timer12').then(cache => {
       return cache.addAll([
         'index.html',
-        '2047.mp3',
-        '1935.mp3'
+        'bip_ontourne.mp3',
+        'bip_suivant.mp3'
       ])
       .then(() => self.skipWaiting());
     })
