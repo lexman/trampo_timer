@@ -18,7 +18,8 @@
 
     <style>
 .timer {
-    font-size: 800%;
+    font-size: 1200%;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
     color: red;
 }
 
@@ -39,13 +40,13 @@
   </head>
   <body>
       <div id="timer" class="timer"> 
-          00' 59''
+          00'59''
       </div>
       <div class="info">
           <div> <span id="horloge">yyyymmdd HH:MM</span> - <span id="minutes_restantes">minutes_restantes</span> minutes jusqu'à 21h30</div>
       </div>
       <div class="saisie_de_base">
-      Pour <input id="nb_trampos" value="3" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> trampolines et <input id="nb_personnes" value="3" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> personnes  par trampo, <input type="text" size="2" maxlength="2" value="2" id="duree_passage" onchange="maj_champs_mineurs()"/> secondes par passage
+      Pour <input id="nb_trampos" value="1" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> trampolines et <input id="nb_personnes" value="1" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> personnes  par trampo, <input type="text" size="2" maxlength="2" value="2" id="duree_passage" onchange="maj_champs_mineurs()"/> secondes par passage
       </div>
       <div class="info">
           <div>
@@ -90,6 +91,7 @@
             bip_suivant.play();
         }
         jouer_ontourne = function() {
+            console.log("On tourne");
             var bip_suivant = document.getElementById('bip_ontourne');
             bip_suivant.pause();  //just bind play/pause to some onclick events on your page
             bip_suivant.play();
@@ -144,7 +146,14 @@
             return parseInt(document.getElementById("duree_rotation").value);
         }
 
+        get_rotations_restantes = function() {
+            return parseInt(document.getElementById("rotations_restantes").value);
+        }
         
+        set_rotations_restantes = function(value) {
+            document.getElementById("rotations_restantes").value = value;
+        }
+
         maj_champs_mineurs = function() {
             var nb_trampos = document.getElementById("nb_trampos").value;
             var nb_personnes = document.getElementById("nb_personnes").value;
@@ -163,14 +172,24 @@
             document.getElementById("minutes_restantes").innerHTML = d_ici_la_fin_de_seance() ;
         }
 
+        repeter = function(texte, nb) {
+            var res = '';
+            for (i = nb; i > 0; i--) {
+                res = res + texte;
+            }
+            return res;
+        }
+        
+        zero_devant = function(texte, nb_zeros) {
+            return repeter('0', nb_zeros - ("" + texte).length) + texte;
+        }
         
         format_duration_seconds = function(duree_secondes) {
             minutes = Math.floor(duree_secondes / 60);
             secondes =  Math.floor(duree_secondes) % 60;
-            return "" + minutes + "' " + secondes + "''";            
+            return "" + zero_devant(minutes, 2) + "'" + zero_devant(secondes, 2) + "''"; 
         }
         
-        speed_trampo = true;
         decompte_speed = get_duree_passage();
         
         tick_speed_trampo = function() {
@@ -192,7 +211,7 @@
                     } else {
                         // On passe aux rotations de trampo
                         set_passages_restants(passages_restants)
-                        speed_trampo = false;
+                        lancer_rotation();
                     }
                     get_speed_trampos_restant(speed_trampos_restant);
                 }
@@ -204,40 +223,54 @@
         fin_passage = 0;
         lancer_passage = function() {
             var maintenant = (new Date()).getTime();
-            fin_passage = maintenant + get_duree_passage() * 1000;
+            fin_passage = maintenant + (get_duree_passage() - 1) * 1000;
         }
 
         fin_rotation = 0;
         lancer_rotation = function() {
             var maintenant = (new Date()).getTime();
-            fin_rotation = maintenant + get_duree_rotation() * 60 * 1000;
+            fin_rotation = maintenant + (get_duree_rotation()) * 60 * 1000;
             lancer_passage();
         }
         
         formater_duree = function(debut_ms, fin_ms) {
             duree_secondes = Math.floor( (fin_ms - debut_ms) / 1000 );
-            minutes = Math.floor(duree_secondes / 60);
-            secondes =  Math.floor(duree_secondes) % 60;
-            return "" + minutes + "' " + secondes + "''";            
-            
+            return format_duration_seconds(duree_secondes);
         }
         
+        mon_timer = null;
+
         tick_rotations = function() {
             var maintenant = (new Date()).getTime();
-            if (maintenant > fin_rotation) {
+            if (maintenant >= fin_rotation) {
                 jouer_ontourne();
-                lancer_rotation();
+                rotations_restantes = get_rotations_restantes();
+                rotations_restantes -= 1;
+                set_rotations_restantes(rotations_restantes);
+                if (rotations_restantes > 0) {
+                    lancer_rotation();
+                } else {
+                    // Fin de la séance
+                    clearInterval(mon_timer);
+                    setTimeout(jouer_ontourne, 600);
+                    maintenant = fin_rotation; // Pour afficher 0'0
+                }
             } else {
-                if (maintenant > fin_passage) {
+                if (maintenant >= fin_passage) {
+                    jouer_suivant();
                     lancer_passage();
                 }
             }
             document.getElementById("timer").innerHTML = formater_duree(maintenant, fin_rotation);
         }
         
+        speed_trampo_termine = function() {
+            return (get_passages_restants() <= 0) && (get_speed_trampos_restant() <= 0)
+        }
+        
         tick_chaque_seconde = function() {
             maj_horloge();
-            if (speed_trampo) {
+            if (! speed_trampo_termine()) {
                 tick_speed_trampo();
             } else {
                 tick_rotations();
@@ -245,12 +278,14 @@
         }
         
         play_pause = function() {
-            setInterval(tick_chaque_seconde, 1000);            
+            decompte_speed = get_duree_passage();
+            mon_timer = setInterval(tick_chaque_seconde, 1000);            
         }
         
         maj_horloge();
         maj_champs_mineurs();
-        
+        document.getElementById("timer").innerHTML = format_duration_seconds(get_duree_passage());
+
       </script>
   </body>
 </html>
