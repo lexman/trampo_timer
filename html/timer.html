@@ -1,0 +1,136 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="manifest" href="manifest.json">
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+    <meta name='application-name' content='Timer 12'>
+    <meta name='apple-mobile-web-app-status-bar-style' content='black'>
+    <meta name='apple-mobile-web-app-title' content='Timer 12'>
+    <link rel='icon sizes=192x192' href='logo.png'>
+    <link rel='apple-touch-icon' href='logo.png'>
+
+    <meta name='theme-color' content='#2196F3'>
+
+    <style>
+.timer {
+    font-size: 800%;
+    color: red;
+}
+
+.saisie_de_base {
+    font-size: 120%;
+}
+
+.saisie_de_base input {
+    border-color: green;
+    border-style: solid;
+}
+
+.info {
+    font-size: 80%;
+}
+
+
+</style>
+  </head>
+  <body>
+      <div class="timer"> 
+          00' 59''
+      </div>
+      <div class="saisie_de_base">
+      Pour <input id="nb_trampos" type="text" size="2" maxlength="2" value="4" onchange="maj_champs_mineurs()"/> trampolines et <input id="nb_personnes" type="text" size="2" maxlength="2" value="4" onchange="maj_champs_mineurs()"/> personnes  par trampo, <input type="text" size="2" maxlength="2" value="60" id="duree_passage" onchange="maj_champs_mineurs()"/> secondes par passage
+      </div>
+      <div class="info">
+          <div>
+          On est au <input id="passages_restants" type="text" size="2" maxlength="2"/>ème passage court sur <input id="speed_trampos_restant" type="text" size="2" maxlength="2" value="4"/> trampos restant</div>
+          <div>
+              puis  <input id="rotations_restantes" type="text" size="2" maxlength="2"/>  rotations de <input id="duree_rotation" type="text" size="3" maxlength="3"/> minutes
+          </div>
+          <div > <span id="horloge">yyyymmdd HH:MM</span> -  <span id="minutes_restantes">minutes_restantes</span> minutes jusqu'à 21h30</div>
+      </div>
+      <audio src="1935.mp3" id="bip_suivant">
+        <p>Pas de chance, il faut pouvoir lire les mp3</p>
+      </audio>
+      <audio src="2047.mp3" id="bip_ontourne">
+        <p>Pas de chance, il faut pouvoir lire les mp3</p>
+      </audio>
+      <div>
+          <div onclick="jouer_suivant()" >Suivant</div>
+      </div>
+      <div>
+          <div onclick="jouer_ontourne()" >On touuuuurne</div>
+      </div>
+      
+      <script>
+        if('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('sw.js', { scope: 'timer.html' })
+             .then(function(registration) {
+                  console.log('Service Worker Registered');
+            });
+          navigator.serviceWorker.ready.then(function(registration) {
+             console.log('Service Worker Ready');
+          });
+        }
+      </script>
+      
+      <script type="text/javascript">
+        jouer_suivant = function() {
+            var bip_suivant = document.getElementById('bip_suivant');
+            bip_suivant.pause();  //just bind play/pause to some onclick events on your page
+            bip_suivant.play();
+        }
+        jouer_ontourne = function() {
+            var bip_suivant = document.getElementById('bip_ontourne');
+            bip_suivant.pause();  //just bind play/pause to some onclick events on your page
+            bip_suivant.play();
+        }
+      </script>
+      
+      <script type="text/javascript">
+        
+        d_ici_la_fin_de_seance = function() {
+            var maintenant = new Date();
+            var cur_h = maintenant.getHours();
+            var cur_m = maintenant.getMinutes();
+            var nb_min = 21 * 60 + 30 - (cur_h * 60 + cur_m);
+            return nb_min;
+        }
+
+        recalculer_champs = function(nb_trampos, nb_personnes, duree_passage) {
+            var duree_rotation = ( d_ici_la_fin_de_seance() - nb_personnes * nb_trampos ) / nb_trampos;
+            return {
+                'passages_restants' : nb_personnes,
+                'speed_trampos_restant' : nb_trampos,
+                'rotations_restantes' : nb_trampos,
+                'duree_rotation' : Math.floor(duree_rotation)
+            }                
+        }
+        
+        maj_champs_mineurs = function() {
+            var nb_trampos = document.getElementById("nb_trampos").value;
+            var nb_personnes = document.getElementById("nb_personnes").value;
+            var duree_passage = document.getElementById("duree_passage").value;
+            var valeurs_champs = recalculer_champs(nb_trampos, nb_personnes, duree_passage);
+            document.getElementById("passages_restants").value = valeurs_champs['passages_restants']
+            document.getElementById("speed_trampos_restant").value = valeurs_champs['speed_trampos_restant']
+            document.getElementById("rotations_restantes").value = valeurs_champs['rotations_restantes']
+            document.getElementById("duree_rotation").value = valeurs_champs['duree_rotation']
+        }
+        
+        maj_horloge = function() {
+            var d = new Date();
+            h = d.getHours() + ":" + d.getMinutes();
+            document.getElementById("horloge").innerHTML = h;
+        }
+        
+        document.getElementById("minutes_restantes").innerHTML = d_ici_la_fin_de_seance() ;
+        maj_horloge();
+        maj_champs_mineurs();
+        
+      </script>
+  </body>
+</html>
