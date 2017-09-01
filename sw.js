@@ -21,7 +21,7 @@
 version = '0.57';
 
 self.addEventListener('install', e => {
-  let timeStamp = Date.now();
+  timeStamp = Date.now();
   e.waitUntil(
     caches.open('timer12').then(cache => {
       return cache.addAll([
