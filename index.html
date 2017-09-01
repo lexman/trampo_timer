@@ -1,4 +1,5 @@
 <html>
+<html>
   <head>
     <meta charset="utf-8">
     <link rel="manifest" href="manifest.json">
@@ -37,21 +38,25 @@
 </style>
   </head>
   <body>
-      <div class="timer"> 
+      <div id="timer" class="timer"> 
           00' 59''
       </div>
       <div class="info">
           <div> <span id="horloge">yyyymmdd HH:MM</span> - <span id="minutes_restantes">minutes_restantes</span> minutes jusqu'à 21h30</div>
       </div>
       <div class="saisie_de_base">
-      Pour <input id="nb_trampos" type="text" size="2" maxlength="2" value="4" onchange="maj_champs_mineurs()"/> trampolines et <input id="nb_personnes" type="text" size="2" maxlength="2" value="4" onchange="maj_champs_mineurs()"/> personnes  par trampo, <input type="text" size="2" maxlength="2" value="60" id="duree_passage" onchange="maj_champs_mineurs()"/> secondes par passage
+      Pour <input id="nb_trampos" value="3" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> trampolines et <input id="nb_personnes" value="3" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> personnes  par trampo, <input type="text" size="2" maxlength="2" value="2" id="duree_passage" onchange="maj_champs_mineurs()"/> secondes par passage
       </div>
       <div class="info">
           <div>
-          On est au <input id="passages_restants" type="text" size="2" maxlength="2"/>ème passage court sur <input id="speed_trampos_restant" type="text" size="2" maxlength="2" value="4"/> trampos restant</div>
+          <!--On est au <input id="passages_restants" type="text" size="2" maxlength="2"/>ème passage court sur <input id="speed_trampos_restant" type="text" size="2" maxlength="2" value="4"/> trampos restant</div>-->
+          Il reste <input id="speed_trampos_restant" type="text" size="2" maxlength="2" value="4"/> trampos et <input id="passages_restants" type="text" size="2" maxlength="2"/> passages sur ce trampo </div> 
           <div>
               puis  <input id="rotations_restantes" type="text" size="2" maxlength="2"/>  rotations de <input id="duree_rotation" type="text" size="3" maxlength="3"/> minutes
           </div>
+      </div>
+      <div onclick="play_pause()"> 
+          Go !
       </div>
       <audio src="bip_suivant.mp3" id="bip_suivant">
         <p>Pas de chance, il faut pouvoir lire les mp3</p>
@@ -92,7 +97,7 @@
       </script>
       
       <script type="text/javascript">
-        
+          
         d_ici_la_fin_de_seance = function() {
             var maintenant = new Date();
             var cur_h = maintenant.getHours();
@@ -111,24 +116,138 @@
             }                
         }
         
+        get_duree_passage = function() {
+            return document.getElementById("duree_passage").value;
+        }
+
+        get_passages_restants = function() {
+            return parseInt(document.getElementById("passages_restants").value);
+        }
+
+        set_passages_restants = function(value) {
+            document.getElementById("passages_restants").value = value;
+        }
+
+        get_speed_trampos_restant = function() {
+            return parseInt(document.getElementById("speed_trampos_restant").value);
+        }
+
+        set_speed_trampos_restant = function(value) {
+            document.getElementById("speed_trampos_restant").value = value;
+        }
+
+        get_nb_personnes = function() {
+            return parseInt(document.getElementById("nb_personnes").value);
+        }
+
+        get_duree_rotation = function() {
+            return parseInt(document.getElementById("duree_rotation").value);
+        }
+
+        
         maj_champs_mineurs = function() {
             var nb_trampos = document.getElementById("nb_trampos").value;
             var nb_personnes = document.getElementById("nb_personnes").value;
             var duree_passage = document.getElementById("duree_passage").value;
             var valeurs_champs = recalculer_champs(nb_trampos, nb_personnes, duree_passage);
-            document.getElementById("passages_restants").value = valeurs_champs['passages_restants']
-            document.getElementById("speed_trampos_restant").value = valeurs_champs['speed_trampos_restant']
-            document.getElementById("rotations_restantes").value = valeurs_champs['rotations_restantes']
-            document.getElementById("duree_rotation").value = valeurs_champs['duree_rotation']
+            document.getElementById("passages_restants").value = valeurs_champs['passages_restants'];
+            document.getElementById("speed_trampos_restant").value = valeurs_champs['speed_trampos_restant'];
+            document.getElementById("rotations_restantes").value = valeurs_champs['rotations_restantes'];
+            document.getElementById("duree_rotation").value = valeurs_champs['duree_rotation'];
         }
         
         maj_horloge = function() {
             var d = new Date();
             h = d.getHours() + ":" + d.getMinutes();
             document.getElementById("horloge").innerHTML = h;
+            document.getElementById("minutes_restantes").innerHTML = d_ici_la_fin_de_seance() ;
+        }
+
+        
+        format_duration_seconds = function(duree_secondes) {
+            minutes = Math.floor(duree_secondes / 60);
+            secondes =  Math.floor(duree_secondes) % 60;
+            return "" + minutes + "' " + secondes + "''";            
         }
         
-        document.getElementById("minutes_restantes").innerHTML = d_ici_la_fin_de_seance() ;
+        speed_trampo = true;
+        decompte_speed = get_duree_passage();
+        
+        tick_speed_trampo = function() {
+            decompte_speed -= 1;
+            if (decompte_speed < 0) {                
+                decompte_speed = get_duree_passage();
+                passages_restants = get_passages_restants();
+                passages_restants -= 1;
+                if (passages_restants > 0) {
+                    jouer_suivant();
+                    set_passages_restants(passages_restants)
+                } else {
+                    jouer_ontourne();
+                    speed_trampos_restant = get_speed_trampos_restant();
+                    speed_trampos_restant -= 1;
+                    set_speed_trampos_restant(speed_trampos_restant);
+                    if (speed_trampos_restant > 0) {
+                        set_passages_restants(get_nb_personnes())
+                    } else {
+                        // On passe aux rotations de trampo
+                        set_passages_restants(passages_restants)
+                        speed_trampo = false;
+                    }
+                    get_speed_trampos_restant(speed_trampos_restant);
+                }
+            }
+            document.getElementById("timer").innerHTML = format_duration_seconds(decompte_speed);
+        }
+
+        
+        fin_passage = 0;
+        lancer_passage = function() {
+            var maintenant = (new Date()).getTime();
+            fin_passage = maintenant + get_duree_passage() * 1000;
+        }
+
+        fin_rotation = 0;
+        lancer_rotation = function() {
+            var maintenant = (new Date()).getTime();
+            fin_rotation = maintenant + get_duree_rotation() * 60 * 1000;
+            lancer_passage();
+        }
+        
+        formater_duree = function(debut_ms, fin_ms) {
+            duree_secondes = Math.floor( (fin_ms - debut_ms) / 1000 );
+            minutes = Math.floor(duree_secondes / 60);
+            secondes =  Math.floor(duree_secondes) % 60;
+            return "" + minutes + "' " + secondes + "''";            
+            
+        }
+        
+        tick_rotations = function() {
+            var maintenant = (new Date()).getTime();
+            if (maintenant > fin_rotation) {
+                jouer_ontourne();
+                lancer_rotation();
+            } else {
+                if (maintenant > fin_passage) {
+                    lancer_passage();
+                }
+            }
+            document.getElementById("timer").innerHTML = formater_duree(maintenant, fin_rotation);
+        }
+        
+        tick_chaque_seconde = function() {
+            maj_horloge();
+            if (speed_trampo) {
+                tick_speed_trampo();
+            } else {
+                tick_rotations();
+            }
+        }
+        
+        play_pause = function() {
+            setInterval(tick_chaque_seconde, 1000);            
+        }
+        
         maj_horloge();
         maj_champs_mineurs();
         
