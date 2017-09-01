@@ -186,7 +186,7 @@
         format_duration_seconds = function(duree_secondes) {
             minutes = Math.floor(duree_secondes / 60);
             secondes =  Math.floor(duree_secondes) % 60;
-            return "" + zero_devant(minutes, 2) + "'" + zero_devant(secondes, 2) + "''"; 
+            return "" + zero_devant(minutes, 2) + ":" + zero_devant(secondes, 2) ; 
         }
         
         decompte_speed = get_duree_passage();
