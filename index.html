@@ -50,11 +50,10 @@
           <div> <span id="horloge">yyyymmdd HH:MM</span> - <span id="minutes_restantes">minutes_restantes</span> minutes jusqu'à 21h30</div>
       </div>
       <div class="saisie_de_base">
-      Pour <input id="nb_trampos" value="1" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> trampolines et <input id="nb_personnes" value="1" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> personnes  par trampo, <input type="text" size="2" maxlength="2" value="2" id="duree_passage" onchange="maj_champs_mineurs()"/> secondes par passage
+      Pour <input id="nb_trampos" value="4" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> trampolines et <input id="nb_personnes" value="4" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> personnes  par trampo, <input value="60" id="duree_passage" type="text" size="2" maxlength="2" onchange="maj_champs_mineurs()"/> secondes par passage
       </div>
       <div class="info">
           <div>
-          <!--On est au <input id="passages_restants" type="text" size="2" maxlength="2"/>ème passage court sur <input id="speed_trampos_restant" type="text" size="2" maxlength="2" value="4"/> trampos restant</div>-->
           Il reste <input id="speed_trampos_restant" type="text" size="2" maxlength="2" value="4"/> trampos et <input id="passages_restants" type="text" size="2" maxlength="2"/> passages sur ce trampo </div> 
           <div>
               puis  <input id="rotations_restantes" type="text" size="2" maxlength="2"/>  rotations de <input id="duree_rotation" type="text" size="3" maxlength="3"/> minutes
