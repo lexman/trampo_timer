@@ -22,5 +22,6 @@
   "scope": "/trampo_timer/",
   "display": "standalone",
   "background_color": "#505050",
-  "theme_color": "#505050"
+  "theme_color": "#505050",
+  "orientation": "landscape"
 }
